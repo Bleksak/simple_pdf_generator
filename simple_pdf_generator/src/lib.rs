@@ -1,7 +1,9 @@
+use std::sync::atomic::Ordering;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::AtomicBool;
 
 use base64::engine::general_purpose;
 use base64::Engine;
@@ -192,7 +194,7 @@ pub async fn generate_pdf_from_html(
                               .unwrap_or_else(|_| PathBuf::new());
                       }
 
-                      let img_data = fs::read(img_src_path).unwrap_or(Vec::new());
+                      let img_data = fs::read(img_src_path).unwrap_or_default();
                       let image_base64 = general_purpose::STANDARD.encode(img_data);
                       let new_src = format!("data:{};base64,{}", mime_type, image_base64);
                       result = caps.get(0).unwrap().as_str().replace(img_src, &new_src);
@@ -347,7 +349,7 @@ pub async fn generate_pdf(
                               .unwrap_or_else(|_| PathBuf::new());
                       }
 
-                      let img_data = fs::read(img_src_path).unwrap_or(Vec::new());
+                      let img_data = fs::read(img_src_path).unwrap_or_default();
                       let image_base64 = general_purpose::STANDARD.encode(img_data);
                       let new_src = format!("data:{};base64,{}", mime_type, image_base64);
 
